@@ -1,0 +1,145 @@
+{% extends 'general/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<style>
+  .chat-box {
+    max-width: 550px;
+    margin: auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    margin-top: 40px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+  }
+  .chat-header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  .chat-body {
+    padding: 10px;
+    overflow: scroll;
+    max-height: 500px;
+  }
+  .chat-response {
+    background-color: #DCF8C6;
+    border-radius: 10px;
+    padding: 10px;
+    max-width: 80%;
+    margin-bottom: 10px;
+  }
+
+  .chat-response2 {
+    background-color: #e4c0ee;
+    border-radius: 10px;
+    padding: 10px;
+    max-width: 80%;
+    margin-bottom: 10px;
+  }
+
+
+
+  .chat-input {
+    width: calc(100% - 90px);
+    border-radius: 20px;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    margin-top: 20px;
+    margin-bottom: -20px;
+
+  }
+
+  .chat-send-button {
+    width: 80px;
+    border-radius: 20px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+  }
+
+  .voice-button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+}
+
+
+</style>
+
+<!-- Hero Start -->
+<div class="container-fluid pt-5 bg-primary hero-header mb-5">
+    <div class="container pt-4">
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="chat-box">
+        <div class="chat-header">AI CHATBOT</div>
+        <div class="chat-body">
+            {% for chat in previous_chats %}
+            <div class="chat-response" style="float:right;">
+                <strong>You:</strong> {{ chat.question }}
+            </div>
+            <br>
+            <br>
+            <br>
+            <div class="chat-response2">
+                <strong>AI Chatbot:</strong> {{ chat.response }}
+            </div>
+            <br>
+            {% endfor %}
+        </div>
+        <div class="chat-footer">
+            <form method="post">
+                {% csrf_token %}
+                <textarea class="chat-input" name="prompt" id="prompt" placeholder="Type your message here..."
+                    rows="2"></textarea>
+                <button type="submit" class="chat-send-button">Send</button>
+            </form>
+            <button type="button" class="voice-button m-2 mt-3" id="click_to_record" title="Voice Message">&#127908;</button>
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+<br>
+
+<script>
+    window.onload = function () {
+        document.getElementById("prompt").focus();
+    }
+
+    click_to_record.addEventListener('click', function () {
+        var speech = true;
+        window.SpeechRecognition = window.webkitSpeechRecognition;
+
+        const recognition = new SpeechRecognition();
+        recognition.interimResults = true;
+
+        recognition.addEventListener('result', e => {
+            const transcript = Array.from(e.results)
+                .map(result => result[0])
+                .map(result => result.transcript)
+                .join('')
+
+            document.getElementById("prompt").innerHTML = transcript;
+            console.log(transcript);
+        });
+
+        if (speech == true) {
+            recognition.start();
+        }
+    })
+</script>
+
+{% endblock %}
